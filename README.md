@@ -1,8 +1,9 @@
 # Nest.js_Kafka_Microservice
-practical examples of both client and server for building Kafka-microservice using Nest.js
+practical examples of both client and server for building Kafka-microservice using Nest.js.
+This full implementation can run in an instant, provided Docker already installed your machine.
+After environment all be set, run 'npm i' and './starter' bash script on the root. 
 
 # Core implementations
-
 ## What I've tried to solve
 #### 1. How to collect data before and after asynchronous tasks done?
 #### 2. How to inject topic-specific function as dependency?
