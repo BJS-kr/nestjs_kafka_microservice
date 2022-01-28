@@ -1,0 +1,46 @@
+version: "2"
+# https://hub.docker.com/r/bitnami/kafka/
+services:
+  zookeeper:
+    image: docker.io/bitnami/zookeeper:3.7
+    ports:
+      - "2181:2181"
+    volumes:
+      - "zookeeper_data:/bitnami"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    image: docker.io/bitnami/kafka:3
+    # docker compose(대쉬 없이) 입력하면 오류납니다.
+    # docker-compose up --scale kafka=2 -d
+    ports:
+      - "9092:9092"
+
+    # 이 옵션 지정해야 오류 안나는데 근본적인 원인 서치 필요
+    hostname: 'localhost'
+    volumes:
+      - "kafka_data:/bitnami"
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      # - KAFKA_ADVERTISED_HOST_NAME=localhost
+    depends_on:
+      - zookeeper
+  mongo:
+    image: mongo
+    restart: always
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: test
+      MONGO_INITDB_ROOT_PASSWORD: test
+    ports:
+      - "27017:27017"
+    # volumes:
+    #   - ./mgdata:/data/db
+
+# docker volume ls에 뜨는 것들이 뭔지 서치 필요
+volumes:
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local
