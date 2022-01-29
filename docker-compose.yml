@@ -30,9 +30,9 @@ services:
     image: mongo
     restart: always
 
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: test
-      MONGO_INITDB_ROOT_PASSWORD: test
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: test
+    #   MONGO_INITDB_ROOT_PASSWORD: test
     ports:
       - "27017:27017"
     # volumes:

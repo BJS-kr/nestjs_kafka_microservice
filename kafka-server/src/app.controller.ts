@@ -15,7 +15,7 @@ export class AppController {
     private readonly metrics: Model<typeof testSchema>,
   ) {}
 
-  @MessagePattern('FIRST_EVENT')
+  @MessagePattern('FIRST_TOPIC')
   async kafkaEventHandler(@Payload() message: any, @Ctx() ctx: KafkaContext) {
     const MESSAGE = ctx.getMessage();
     this.metrics.create(MESSAGE.value);
@@ -23,7 +23,7 @@ export class AppController {
   }
 
   // 클라이언트의 클로저 함수가 잘 분리되서 작동하는지 검증하기 위한 두 번째 이벤트
-  @MessagePattern('SECOND_EVENT')
+  @MessagePattern('SECOND_TOPIC')
   async kafkaEventHandler2(@Payload() message: any, @Ctx() ctx: KafkaContext) {
     const MESSAGE = ctx.getMessage();
     this.metrics.create(MESSAGE.value);

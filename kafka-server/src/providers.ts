@@ -4,7 +4,7 @@ import { testSchema } from 'src/models/metric';
 export const mongooseProvider = {
   provide: 'MONGOOSE_CONNECTION',
   useFactory: (): Promise<typeof mongoose> =>
-    mongoose.connect('mongodb://test:test@localhost:27017'),
+    mongoose.connect('mongodb://localhost:27017'),
 };
 
 export const testSchemaProvider = {
