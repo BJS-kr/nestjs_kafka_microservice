@@ -1,10 +1,10 @@
 import { ClientKafka, ClientsModule, Transport } from '@nestjs/microservices';
 import { Producer } from 'kafkajs';
-import { eventReceiverFactory } from './functions';
+import { eventReceiverFactory } from './factory';
 import { KafkaSender } from './kafkaSender';
 
 // KafkaSender의 sendBatch event를 등록 및 발생 시키기 위한 event name 정의
-export const kafkaSend = Symbol.for('KAFKA_SEND');
+const kafkaSend = Symbol.for('KAFKA_SEND');
 
 export const clientModule = ClientsModule.register([
   {
@@ -40,17 +40,17 @@ const kafkaSender = {
 };
 
 const firstEventReceiver = {
-  provide: 'FIRST_EVENT_RECEIVER',
+  provide: 'FIRST_TOPIC_RECEIVER',
   useFactory: (kafkaSender: KafkaSender) => {
-    return eventReceiverFactory('FIRST_EVENT', kafkaSender);
+    return eventReceiverFactory('FIRST_TOPIC', kafkaSender, kafkaSend);
   },
   inject: ['KAFKA_SENDER'],
 };
 
 const secondEventReceiver = {
-  provide: 'SECOND_EVENT_RECEIVER',
+  provide: 'SECOND_TOPIC_RECEIVER',
   useFactory: (kafkaSender: KafkaSender) => {
-    return eventReceiverFactory('SECOND_EVENT', kafkaSender);
+    return eventReceiverFactory('SECOND_TOPIC', kafkaSender, kafkaSend);
   },
   inject: ['KAFKA_SENDER'],
 };

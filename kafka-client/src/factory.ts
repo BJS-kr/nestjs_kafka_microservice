@@ -1,5 +1,4 @@
 import { KafkaSender } from './kafkaSender';
-import { kafkaSend } from './providers';
 
 // 이중 클로저를 활용합니다. 시작시간과 완료시간을 재는 인자는 curring형식입니다.
 // 이벤트 메세지큐 활용을 위한 topic과 sender instance를 클로저로 지니는 고차함수입니다.
@@ -7,7 +6,11 @@ import { kafkaSend } from './providers';
 // 최상위에 messages 배열 클로저가 존재합니다. asynchronous handler의 처리 시간을 재기 위해
 // 시작 시간과 문자열의 길이를 첫 번째 return의 클로저로 지니고, 완료시점을 두번째 리턴으로 가집니다.
 // topic을 분리하고 정의해둔 kafkaSender setter를 활용하기 위해 이와 같은 형식을 사용했습니다.
-export function eventReceiverFactory(topic: string, kafkaSender: KafkaSender) {
+export function eventReceiverFactory(
+  topic: string,
+  kafkaSender: KafkaSender,
+  kafkaSendEvent: symbol,
+) {
   let messages = [];
   // curring 시작
   return function (textLength: number, startTime: number) {
@@ -20,13 +23,14 @@ export function eventReceiverFactory(topic: string, kafkaSender: KafkaSender) {
           responseTime: endTime - startTime,
         }),
       });
+
       if (messages.length >= 10) {
         // setter
         // message closure에 적재된 데이터를 kafkaSender instance에 set합니다.
         // 기존에는 setter가 sendBatch까지 call했으나, setter의 목적에 부합하게 사용하기 위하여 이벤트로 분리했습니다.
         kafkaSender.topicMessages = { topic, messages };
         // KafkaSender의 sendBatch를 call하기 위한 이벤트 발생
-        kafkaSender.emit(kafkaSend);
+        kafkaSender.emit(kafkaSendEvent);
         // 클로저 초기화
         messages = [];
       }

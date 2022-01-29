@@ -1,24 +1,24 @@
 import { Controller, Get, Inject } from '@nestjs/common';
-import { eventReceiverFactory } from './functions';
+import { eventReceiverFactory } from './factory';
 
 @Controller()
 export class AppController {
   constructor(
-    @Inject('FIRST_EVENT_RECEIVER')
-    private readonly firstEventReceiver: ReturnType<
+    @Inject('FIRST_TOPIC_RECEIVER')
+    private readonly firstTopicReceiver: ReturnType<
       typeof eventReceiverFactory
     >,
 
-    @Inject('SECOND_EVENT_RECEIVER')
-    private readonly secondEventReceiver: ReturnType<
+    @Inject('SECOND_TOPIC_RECEIVER')
+    private readonly secondTopicReceiver: ReturnType<
       typeof eventReceiverFactory
     >,
   ) {}
 
-  @Get('EVENT_NAME_FIRST')
-  async someAsyncronousHandler_1() {
+  @Get('FIRST_TOPIC')
+  async someAsynchronousHandler_1() {
     const text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit';
-    const endTimeReceiver = this.firstEventReceiver(text.length, Date.now());
+    const endTimeReceiver = this.firstTopicReceiver(text.length, Date.now());
 
     // some async task....
     await new Promise((res) => {
@@ -28,10 +28,10 @@ export class AppController {
     endTimeReceiver(Date.now());
   }
 
-  @Get('EVENT_NAME_SECOND')
-  async someAsyncronousHandler_2() {
+  @Get('SECOND_TOPIC')
+  async someAsynchronousHandler_2() {
     const text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit';
-    const endTimeReceiver = this.secondEventReceiver(text.length, Date.now());
+    const endTimeReceiver = this.secondTopicReceiver(text.length, Date.now());
 
     // some async task... which takes long time...
     await new Promise((res) => {
