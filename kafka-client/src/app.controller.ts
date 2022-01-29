@@ -1,14 +1,18 @@
 import { Controller, Get, Inject } from '@nestjs/common';
-import { dataGatherer } from './functions';
+import { eventReceiverFactory } from './functions';
 
 @Controller()
 export class AppController {
   constructor(
     @Inject('FIRST_EVENT_RECEIVER')
-    private readonly firstEventReceiver: ReturnType<typeof dataGatherer>,
+    private readonly firstEventReceiver: ReturnType<
+      typeof eventReceiverFactory
+    >,
 
     @Inject('SECOND_EVENT_RECEIVER')
-    private readonly secondEventReceiver: ReturnType<typeof dataGatherer>,
+    private readonly secondEventReceiver: ReturnType<
+      typeof eventReceiverFactory
+    >,
   ) {}
 
   @Get('EVENT_NAME_FIRST')

@@ -6,7 +6,7 @@ import { KafkaSender } from './kafkaSender';
 // 최상위에 messages 배열 클로저가 존재합니다. asynchronous handler의 처리 시간을 재기 위해
 // 시작 시간과 문자열의 길이를 첫 번째 return의 클로저로 지니고, 완료시점을 두번째 리턴으로 가집니다.
 // topic을 분리하고 정의해둔 kafkaSender setter를 활용하기 위해 이와 같은 형식을 사용했습니다.
-export function dataGatherer(topic: string, kafkaSender: KafkaSender) {
+export function eventReceiverFactory(topic: string, kafkaSender: KafkaSender) {
   let messages = [];
   // curring 시작
   return function (textLength: number, startTime: number) {

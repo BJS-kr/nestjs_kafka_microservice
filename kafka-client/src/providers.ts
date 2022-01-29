@@ -1,6 +1,6 @@
 import { ClientKafka, ClientsModule, Transport } from '@nestjs/microservices';
 import { Producer } from 'kafkajs';
-import { dataGatherer } from './functions';
+import { eventReceiverFactory } from './functions';
 import { KafkaSender } from './kafkaSender';
 
 export const clientModule = ClientsModule.register([
@@ -35,7 +35,7 @@ const kafkaSender = {
 const firstEventReceiver = {
   provide: 'FIRST_EVENT_RECEIVER',
   useFactory: (kafkaSender: KafkaSender) => {
-    return dataGatherer('FIRST_EVENT', kafkaSender);
+    return eventReceiverFactory('FIRST_EVENT', kafkaSender);
   },
   inject: ['KAFKA_SENDER'],
 };
@@ -43,7 +43,7 @@ const firstEventReceiver = {
 const secondEventReceiver = {
   provide: 'SECOND_EVENT_RECEIVER',
   useFactory: (kafkaSender: KafkaSender) => {
-    return dataGatherer('SECOND_EVENT', kafkaSender);
+    return eventReceiverFactory('SECOND_EVENT', kafkaSender);
   },
   inject: ['KAFKA_SENDER'],
 };
