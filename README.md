@@ -12,7 +12,7 @@ After environment all be set, run 'npm i' and './starter' bash script on the roo
 #### 5. How to make commuicate between data collecting function and Kafka sender object?
 
 ## Here's the architecture and code
-![explained](https://user-images.githubusercontent.com/78771384/151597884-99cf4d8b-2d6f-4d52-b798-f595a9fb641e.png)
+![explained](https://user-images.githubusercontent.com/78771384/151653623-6778824e-5de4-4346-841f-f07773f4db25.png)
 
 ## Topic-specific closure func Factory
 ```typescript
