@@ -61,6 +61,7 @@ export class KafkaSender extends EventEmitter {
   }
 
   public sendBatch() {
+    // uses queueMicrotask to not interfere and affect to buisness logic
     queueMicrotask(async () => {
       await this.producer.connect();
       await this.producer.sendBatch(this.batchForm);
@@ -72,7 +73,7 @@ export class KafkaSender extends EventEmitter {
 }
 ```
 
-## Chaining dependencies by token to inject only end of the chain(produced func from factory)
+## Chaining dependencies by token to inject only end of the chain
 ```typescript
 export const clientModule = ClientsModule.register([
   {
