@@ -3,6 +3,9 @@ import { Producer } from 'kafkajs';
 import { eventReceiverFactory } from './functions';
 import { KafkaSender } from './kafkaSender';
 
+// KafkaSender의 sendBatch event를 등록 및 발생 시키기 위한 event name 정의
+export const kafkaSend = Symbol.for('KAFKA_SEND');
+
 export const clientModule = ClientsModule.register([
   {
     name: 'KAFKA',
@@ -27,7 +30,11 @@ const producer = {
 const kafkaSender = {
   provide: 'KAFKA_SENDER',
   useFactory: (producer: Producer) => {
-    return new KafkaSender(producer);
+    const kafkaSender = new KafkaSender(producer);
+    // event 등록. KafkaSender가 EventEmitter를 extends해 작성한 class이기 때문에 가능
+    kafkaSender.on(kafkaSend, () => kafkaSender.sendBatch());
+
+    return kafkaSender;
   },
   inject: ['PRODUCER'],
 };

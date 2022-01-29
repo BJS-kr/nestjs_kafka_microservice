@@ -1,4 +1,5 @@
 import { KafkaSender } from './kafkaSender';
+import { kafkaSend } from './providers';
 
 // 이중 클로저를 활용합니다. 시작시간과 완료시간을 재는 인자는 curring형식입니다.
 // 이벤트 메세지큐 활용을 위한 topic과 sender instance를 클로저로 지니는 고차함수입니다.
@@ -21,8 +22,11 @@ export function eventReceiverFactory(topic: string, kafkaSender: KafkaSender) {
       });
       if (messages.length >= 10) {
         // setter
-        // kafkaSender는 kafka server(microservice)로 set된 데이터를 보냅니다.
+        // message closure에 적재된 데이터를 kafkaSender instance에 set합니다.
+        // 기존에는 setter가 sendBatch까지 call했으나, setter의 목적에 부합하게 사용하기 위하여 이벤트로 분리했습니다.
         kafkaSender.topicMessages = { topic, messages };
+        // KafkaSender의 sendBatch를 call하기 위한 이벤트 발생
+        kafkaSender.emit(kafkaSend);
         // 클로저 초기화
         messages = [];
       }
