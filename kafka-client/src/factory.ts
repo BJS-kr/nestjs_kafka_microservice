@@ -1,4 +1,4 @@
-import { KafkaSender } from './kafkaSender';
+import { KafkaBatchSender } from './kafkaSender';
 
 // 이중 클로저를 활용합니다. 시작시간과 완료시간을 재는 인자는 curring형식입니다.
 // 이벤트 메세지큐 활용을 위한 topic과 sender instance를 클로저로 지니는 고차함수입니다.
@@ -8,7 +8,7 @@ import { KafkaSender } from './kafkaSender';
 // topic을 분리하고 정의해둔 kafkaSender setter를 활용하기 위해 이와 같은 형식을 사용했습니다.
 export function eventReceiverFactory(
   topic: string,
-  kafkaSender: KafkaSender,
+  kafkaSender: KafkaBatchSender,
   kafkaSendEvent: symbol,
 ) {
   let messages = [];
@@ -34,6 +34,51 @@ export function eventReceiverFactory(
         // 클로저 초기화
         messages = [];
       }
+    };
+  };
+}
+
+// 위의 eventReceiverFactory은 비즈니스 로직에 eventReceiver가 자리를 차지해야한다는 점이 문제입니다.
+// method parameter와 execution time을 알고 싶다면 데코레이터로 구현이 가능합니다.
+// 비즈니스 로직이 외관상으로도 변경되지 않고 가독성이 향상된다는 것이 장점입니다.
+export function kafkaEventDecoratorFactory(
+  topic: string,
+  kafkaSender: KafkaBatchSender,
+  kafkaSenderMethodEvent: symbol,
+) {
+  let messages = [];
+  return function kafkaTopicDecorator() {
+    return function (
+      target: any,
+      prop: string,
+      descriptor: PropertyDescriptor,
+    ) {
+      const preservedMethod = descriptor.value;
+
+      descriptor.value = async function () {
+        // eslint-disable-next-line prefer-rest-params
+        const text: string = arguments[0];
+        const [textLength, startTime] = [text?.length || 'unknown', Date.now()];
+        console.log(textLength, startTime);
+        const result = await preservedMethod();
+
+        (function (endTime: number) {
+          messages.push({
+            value: JSON.stringify({
+              textLength: textLength,
+              responseTime: endTime - startTime,
+            }),
+          });
+
+          if (messages.length >= 10) {
+            kafkaSender.topicMessages = { topic, messages };
+            kafkaSender.emit(kafkaSenderMethodEvent);
+            messages = [];
+          }
+        })(Date.now());
+
+        return result;
+      };
     };
   };
 }

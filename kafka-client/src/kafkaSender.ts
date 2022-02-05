@@ -3,7 +3,7 @@ import * as EventEmitter from 'events';
 
 // eventReceiverFactory와 KafkaSender는 이벤트로 소통합니다.
 // 이를 위해 events를 extends한 클래스로 작성합니다.
-export class KafkaSender extends EventEmitter {
+export class KafkaBatchSender extends EventEmitter {
   constructor(private readonly producer: Producer) {
     super();
   }

@@ -1,6 +1,6 @@
-import { Controller, Get, Inject } from '@nestjs/common';
+import { Controller, Inject, Post } from '@nestjs/common';
 import { eventReceiverFactory } from './factory';
-
+import { Text, KafkaFirstTopic } from './decorators';
 @Controller()
 export class AppController {
   constructor(
@@ -15,27 +15,35 @@ export class AppController {
     >,
   ) {}
 
-  @Get('FIRST_TOPIC')
-  async someAsynchronousHandler_1() {
-    const text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit';
+  @Post('FIRST_TOPIC_DECORATED')
+  @KafkaFirstTopic()
+  async someAsynchronousHandler_1(@Text() text) {
+    // some async task....
+    await new Promise((res) => {
+      setTimeout(() => res(text), 500);
+    });
+  }
+
+  @Post('FIRST_TOPIC')
+  @KafkaFirstTopic()
+  async someAsynchronousHandler_2(@Text() text) {
     const endTimeReceiver = this.firstTopicReceiver(text.length, Date.now());
 
     // some async task....
     await new Promise((res) => {
-      setTimeout(() => res('done!'), 500);
+      setTimeout(() => res(text), 600);
     });
 
     endTimeReceiver(Date.now());
   }
 
-  @Get('SECOND_TOPIC')
-  async someAsynchronousHandler_2() {
-    const text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit';
+  @Post('SECOND_TOPIC')
+  async someAsynchronousHandler_3(@Text() text) {
     const endTimeReceiver = this.secondTopicReceiver(text.length, Date.now());
 
-    // some async task... which takes long time...
+    // some async task...
     await new Promise((res) => {
-      setTimeout(() => res('done!'), 1000);
+      setTimeout(() => res(text), 700);
     });
 
     endTimeReceiver(Date.now());
