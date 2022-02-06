@@ -42,12 +42,11 @@ export function eventReceiverFactory(
 // method parameter와 execution time을 알고 싶다면 데코레이터로 구현이 가능합니다.
 // 비즈니스 로직이 외관상으로도 변경되지 않고 가독성이 향상된다는 것이 장점입니다.
 export function kafkaEventDecoratorFactory(
-  topic: string,
   kafkaSender: KafkaBatchSender,
   kafkaSenderMethodEvent: symbol,
 ) {
   let messages = [];
-  return function kafkaTopicDecorator() {
+  return function kafkaTopicDecorator(topic: string) {
     return function (
       target: any,
       prop: string,

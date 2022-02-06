@@ -1,6 +1,6 @@
 import { Controller, Inject, Post } from '@nestjs/common';
 import { eventReceiverFactory } from './factory';
-import { Text, KafkaFirstTopic } from './decorators';
+import { Text, Kafka } from './decorators';
 @Controller()
 export class AppController {
   constructor(
@@ -16,7 +16,7 @@ export class AppController {
   ) {}
 
   @Post('FIRST_TOPIC_DECORATED')
-  @KafkaFirstTopic()
+  @Kafka('FIRST_TOPIC')
   async someAsynchronousHandler_1(@Text() text) {
     // some async task....
     await new Promise((res) => {
