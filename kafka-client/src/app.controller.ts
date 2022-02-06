@@ -25,7 +25,6 @@ export class AppController {
   }
 
   @Post('FIRST_TOPIC')
-  @KafkaFirstTopic()
   async someAsynchronousHandler_2(@Text() text) {
     const endTimeReceiver = this.firstTopicReceiver(text.length, Date.now());
 
