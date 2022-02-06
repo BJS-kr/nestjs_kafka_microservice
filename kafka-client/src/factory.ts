@@ -58,24 +58,21 @@ export function kafkaEventDecoratorFactory(
       descriptor.value = async function () {
         // eslint-disable-next-line prefer-rest-params
         const text: string = arguments[0];
-        const [textLength, startTime] = [text?.length || 'unknown', Date.now()];
-        console.log(textLength, startTime);
+        const [textLength, startTime] = [text?.length, Date.now()];
         const result = await preservedMethod();
 
-        (function (endTime: number) {
-          messages.push({
-            value: JSON.stringify({
-              textLength: textLength,
-              responseTime: endTime - startTime,
-            }),
-          });
+        messages.push({
+          value: JSON.stringify({
+            textLength: textLength,
+            responseTime: Date.now() - startTime,
+          }),
+        });
 
-          if (messages.length >= 10) {
-            kafkaSender.topicMessages = { topic, messages };
-            kafkaSender.emit(kafkaSenderMethodEvent);
-            messages = [];
-          }
-        })(Date.now());
+        if (messages.length >= 10) {
+          kafkaSender.topicMessages = { topic, messages };
+          kafkaSender.emit(kafkaSenderMethodEvent);
+          messages = [];
+        }
 
         return result;
       };
