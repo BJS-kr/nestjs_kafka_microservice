@@ -1,6 +1,6 @@
 import { Controller, Inject, Post } from '@nestjs/common';
 import { eventReceiverFactory } from './factory';
-import { Text, Kafka } from './decorators';
+import { Text, FirstTopicDecorator } from './decorators';
 @Controller()
 export class AppController {
   constructor(
@@ -15,8 +15,9 @@ export class AppController {
     >,
   ) {}
 
+  // 사용해보고 나니 가장 깔끔한 방법은 데코레이터 사용
   @Post('FIRST_TOPIC_DECORATED')
-  @Kafka('FIRST_TOPIC')
+  @FirstTopicDecorator()
   async someAsynchronousHandler_1(@Text() text) {
     // some async task....
     await new Promise((res) => {
